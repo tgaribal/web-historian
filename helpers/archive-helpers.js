@@ -1,6 +1,9 @@
 var fs = require('fs');
+var http = require('http');
 var path = require('path');
 var _ = require('underscore');
+var request = require('request');
+
 
 /*
  * You will need to reuse the same paths many times over in the course of this sprint.
@@ -11,8 +14,8 @@ var _ = require('underscore');
 
 exports.paths = {
   siteAssets: path.join(__dirname, '../web/public'),
-  archivedSites: path.join(__dirname, '../archives/sites'),
-  list: path.join(__dirname, '../archives/sites.txt')
+  archivedSites: path.join(__dirname, '../web/archives/sites'),
+  list: path.join(__dirname, '../web/archives/sites.txt')
 };
 
 // Used for stubbing paths for tests, do not modify
@@ -43,9 +46,7 @@ exports.isUrlInList = function(url, callback) {
 };
 
 exports.addUrlToList = function(url, callback) {
-  callback(fs.appendFile(exports.paths.list, url, 'utf8', function() {
-    !exports.isUrlInList(url);
-  })); 
+  fs.appendFile(exports.paths.list, url, 'utf8', callback);
 };
 
 exports.isUrlArchived = function(url, callback) {
@@ -60,11 +61,11 @@ exports.isUrlArchived = function(url, callback) {
 
 exports.downloadUrls = function(urls) {
   urls.forEach(url => {
-    fs.writeFile(exports.paths.archivedSites + '/' + url, url, function(err) {
-      if (err) {
-        console.log(err);
+    exports.isUrlArchived(url, function(exists) {
+      if (exists) {
+        console.log('This URL is Already Archived!');
       } else {
-        console.log('downloaded url');
+        request('http://' + url).pipe(fs.createWriteStream(exports.paths.archivedSites + '/' + url));
       }
     });
   });
