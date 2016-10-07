@@ -31,7 +31,7 @@ exports.handleRequest = function (req, res) {
           res.end(data, 'utf8');
         }
       });
-    } else if (req.url === '/styles.css') {
+    } else if (req.url === '/styles.css' ) {
       fs.readFile(archive.paths.siteAssets + '/' + 'styles.css', function(err, data) {
         if (err) {
           console.log(err);
@@ -40,7 +40,6 @@ exports.handleRequest = function (req, res) {
           res.end(data, 'utf8');
         }
       });
-
     } else if (req.url === '/loading') {
       fs.readFile(archive.paths.siteAssets + '/' + 'loading.html', function(err, data) {
         if (err) {
